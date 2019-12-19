@@ -26,8 +26,8 @@ const Timer = props => {
 	const [paused, setPaused] = useState(false);
 	const [over, setOver] = useState(true);
 	const [time, setTime] = useState({
-		minutes: 0,
-		seconds: 2
+		minutes: 2,
+		seconds: 0
 	});
 
 	const timeHandler = ({ target: { id } }) => {
@@ -171,7 +171,7 @@ const Timer = props => {
 	const deletBtn = id => {
 		if (id !== timeLogId || paused || over) {
 			return (
-				<Button id={id} onClick={deleteHandler}>
+				<Button id={id} onClick={deleteHandler} variant="danger">
 					delete
 				</Button>
 			);
@@ -226,6 +226,7 @@ const Timer = props => {
 										id="start"
 										onClick={timeHandler}
 										block
+										variant="success"
 									>
 										start
 									</Button>
