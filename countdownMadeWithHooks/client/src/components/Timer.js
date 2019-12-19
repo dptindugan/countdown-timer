@@ -13,6 +13,8 @@ import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
 import Swal from "sweetalert2";
 
 const Timer = props => {
@@ -26,64 +28,72 @@ const Timer = props => {
 	const [paused, setPaused] = useState(false);
 	const [over, setOver] = useState(true);
 	const [time, setTime] = useState({
-		minutes: 2,
+		minutes: 0,
+		seconds: 0
+	});
+
+	const [startTime, setStartTime] = useState({
+		minutes: 0,
 		seconds: 0
 	});
 
 	const timeHandler = ({ target: { id } }) => {
 		if (id === "start") {
-			if (paused || over) {
-				const { minutes, seconds } = time;
-				if (minutes !== 0 || seconds !== 0) {
+			if (startTime.minutes > 0 || startTime.seconds > 0) {
+				if (paused || over) {
+					const { minutes, seconds } = time;
+					if (minutes !== 0 || seconds !== 0) {
+						let newLog = {
+							startTime: `${minutes
+								.toString()
+								.padStart(
+									2,
+									"0"
+								)}:${seconds.toString().padStart(2, "0")}`
+						};
+
+						props
+							.createLoggingMutation({
+								variables: newLog,
+								refetchQueries: [
+									{
+										query: getLoggingsQuery
+									}
+								]
+							})
+							.then(res => setTimeLogId(res.data.createLog.id));
+					}
+				}
+
+				setPaused(false);
+				setOver(false);
+			} else {
+				console.log("startTime");
+			}
+		}
+
+		if (id === "stop") {
+			const { minutes, seconds } = time;
+			if (!paused || over) {
+				if (timeLogId !== "") {
 					let newLog = {
-						startTime: `${(0)
-							.toString()
-							.padStart(2, "0")}:${minutes
+						id: timeLogId,
+						stopTime: `${minutes
 							.toString()
 							.padStart(2, "0")}:${seconds
 							.toString()
 							.padStart(2, "0")}`
 					};
 
-					props
-						.createLoggingMutation({
-							variables: newLog,
-							refetchQueries: [
-								{
-									query: getLoggingsQuery
-								}
-							]
-						})
-						.then(res => setTimeLogId(res.data.createLog.id));
+					props.updateLoggingMutation({
+						variables: newLog,
+						refetchQueries: [
+							{
+								query: getLoggingsQuery
+							}
+						]
+					});
 				}
-			}
-
-			setPaused(false);
-			setOver(false);
-		}
-
-		if (id === "stop") {
-			const { minutes, seconds } = time;
-			if (!paused || over) {
-				let newLog = {
-					id: timeLogId,
-					stopTime: `${(0)
-						.toString()
-						.padStart(2, "0")}:${minutes
-						.toString()
-						.padStart(2, "0")}:${seconds
-						.toString()
-						.padStart(2, "0")}`
-				};
-
-				props.updateLoggingMutation({
-					variables: newLog,
-					refetchQueries: [
-						{
-							query: getLoggingsQuery
-						}
-					]
-				});
 			}
 			setPaused(true);
 		}
@@ -92,35 +102,35 @@ const Timer = props => {
 	const tick = () => {
 		if (paused || over) return;
 		if (time.minutes === 0 && time.seconds === 0) {
-			setTimeLogId("");
-			Swal.fire("Time's up!");
-			const { minutes, seconds } = time;
-			if (!paused || over) {
-				let newLog = {
-					id: timeLogId,
-					stopTime: `${(0)
-						.toString()
-						.padStart(2, "0")}:${minutes
-						.toString()
-						.padStart(2, "0")}:${seconds
-						.toString()
-						.padStart(2, "0")}`
-				};
+			if (startTime.minutes > 0 || startTime.seconds > 0) {
+				setTimeLogId("");
+				Swal.fire("Time's up!");
+				const { minutes, seconds } = time;
+				if (!paused || over) {
+					let newLog = {
+						id: timeLogId,
+						stopTime: `${minutes
+							.toString()
+							.padStart(2, "0")}:${seconds
+							.toString()
+							.padStart(2, "0")}`
+					};
 
-				props.updateLoggingMutation({
-					variables: newLog,
-					refetchQueries: [
-						{
-							query: getLoggingsQuery
-						}
-					]
+					props.updateLoggingMutation({
+						variables: newLog,
+						refetchQueries: [
+							{
+								query: getLoggingsQuery
+							}
+						]
+					});
+				}
+				setOver(true);
+				setTime({
+					minutes: startTime.minutes,
+					seconds: startTime.seconds
 				});
 			}
-			setOver(true);
-			setTime({
-				minutes: 2,
-				seconds: 0
-			});
 		} else if (time.seconds === 0)
 			setTime({
 				minutes: time.minutes - 1,
@@ -135,8 +145,8 @@ const Timer = props => {
 
 	const reset = () => {
 		setTime({
-			minutes: 2,
-			seconds: 0
+			minutes: startTime.minutes,
+			seconds: startTime.seconds
 		});
 		setPaused(false);
 		setOver(true);
@@ -147,9 +157,7 @@ const Timer = props => {
 			if (timeLogId !== "") {
 				let newLog = {
 					id: timeLogId,
-					stopTime: `${(0)
-						.toString()
-						.padStart(2, "0")}:${minutes
+					stopTime: `${minutes
 						.toString()
 						.padStart(2, "0")}:${seconds
 						.toString()
@@ -201,6 +209,31 @@ const Timer = props => {
 		});
 	};
 
+	const inputChangeHandler = ({ target: { name, value } }) => {
+		// for input minutes
+		if (name === "minutes") {
+			setStartTime({
+				...time,
+				minutes: value
+			});
+			setTime({
+				...time,
+				minutes: value
+			});
+		}
+
+		if (name === "seconds") {
+			setStartTime({
+				...time,
+				seconds: value
+			});
+			setTime({
+				...time,
+				seconds: value
+			});
+		}
+	};
+
 	return (
 		<Container className="p-5">
 			<Row className="mt-5">
@@ -210,6 +243,25 @@ const Timer = props => {
 							<h2>Timer</h2>
 						</Card.Header>
 						<Card.Body>
+							<Row>
+								<InputGroup className="mb-3 col">
+									<FormControl
+										type="number"
+										name="minutes"
+										placeholder="minutes"
+										onChange={inputChangeHandler}
+									/>
+								</InputGroup>
+								<span className="col-1">:</span>
+								<InputGroup className="mb-3 col">
+									<FormControl
+										type="number"
+										name="seconds"
+										placeholder="seconds"
+										onChange={inputChangeHandler}
+									/>
+								</InputGroup>
+							</Row>
 							<h1>
 								{`${time.minutes
 									.toString()
