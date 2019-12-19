@@ -16,6 +16,8 @@ and set it as timeLogId.
     -- the delete button of loggings table will not appear until once the current logging is stopped or reseted.
 
 TO RUN THE APP
+
+TO RUN THE SERVER
 from the root folder open the server folder.
 ./server
 and in the console run
@@ -30,10 +32,52 @@ with node package manager
 
 \$ node
 
-and will start the server then on a new console
+and will start the server
 
+TO RUN THE CLIENT
+open a new console
 open the client folder from the countdownMadeWithHooks
 ./countdownMadeWithHooks/client
+and in the console run
+
+with node package manager
+
+\$npm install
+to install the all devepencies then
+
+\$npm start
+to run the react app.
+
+COUNTDOWN TIMER with REDUX
+-- does everything that the COUNTDOWN TIMER with HOOKS the difference is to states are managed with redux.
+
+TO RUN THE APP
+
+TO RUN THE SERVER
+\*note that if you already run installed the server dependecies
+and the is running server for the CountDownTimerWithHooks you don't need to
+do part.
+
+from the root folder open the server folder.
+./server
+and in the console run
+
+with node package manager
+
+\$ npm install
+
+it will install all the dependencies and after installing run
+
+with node package manager
+
+\$ node
+
+and will start the server
+
+TO RUN THE CLIENT
+on a new console
+open the client folder from the countdownMadeWithRedux
+./countdownMadeWithRedux/client
 and in the console run
 
 with node package manager
