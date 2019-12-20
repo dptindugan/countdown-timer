@@ -16,6 +16,7 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Swal from "sweetalert2";
+import { format, parseISO } from "date-fns";
 
 const Timer = props => {
 	let timeLogs = props.getLoggingsQuery.getLogs
@@ -318,17 +319,29 @@ const Timer = props => {
 									<th scope="col">#</th>
 									<th scope="col">start time</th>
 									<th scope="col">stop time</th>
+									<th scope="col">Timestamp</th>
 									<th scope="col">action</th>
 								</tr>
 							</thead>
 							<tbody>
 								{timeLogs.map((timeLog, index) => {
-									const { id, startTime, stopTime } = timeLog;
+									const {
+										id,
+										startTime,
+										stopTime,
+										createdAt
+									} = timeLog;
 									return (
 										<tr key={index}>
 											<th scope="row">{index + 1}</th>
 											<td>{startTime}</td>
 											<td>{stopTime}</td>
+											<td>
+												{format(
+													parseISO(createdAt),
+													"MMM-dd-yy, hh:mm:ss"
+												)}
+											</td>
 											<td>{deletBtn(id)}</td>
 										</tr>
 									);

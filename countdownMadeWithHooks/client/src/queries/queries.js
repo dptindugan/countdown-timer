@@ -6,6 +6,8 @@ const getLoggingsQuery = gql`
 			id
 			stopTime
 			startTime
+			createdAt
+			updatedAt
 		}
 	}
 `;
@@ -16,6 +18,8 @@ const getLoggingQuery = gql`
 			id
 			stopTime
 			startTime
+			createdAt
+			updatedAt
 		}
 	}
 `;
