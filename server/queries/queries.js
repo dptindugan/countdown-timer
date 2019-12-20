@@ -1,12 +1,20 @@
 const { ApolloServer, gql } = require("apollo-server-express");
+const { GraphQLDateTime } = require("graphql-iso-date");
 
 const Logging = require("../models/Logging");
 
+const customScalarResolver = {
+	Date: GraphQLDateTime
+};
+
 const typeDefs = gql`
+	scalar Date
 	type LogType {
 		id: ID
 		startTime: String
 		stopTime: String
+		createdAt: Date
+		updatedAt: Date
 	}
 
 	type Mutation {
