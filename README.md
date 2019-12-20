@@ -37,7 +37,7 @@ and will start the server
 TO RUN THE CLIENT
 open a new console
 open the client folder from the countdownMadeWithHooks
-./countdownMadeWithHooks/client
+./countdownMadeWithHooks
 and in the console run
 
 with node package manager
@@ -77,7 +77,7 @@ and will start the server
 TO RUN THE CLIENT
 on a new console
 open the client folder from the countdownMadeWithRedux
-./countdownMadeWithRedux/client
+./countdownMadeWithRedux
 and in the console run
 
 with node package manager
