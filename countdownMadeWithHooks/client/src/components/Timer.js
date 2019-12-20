@@ -42,6 +42,11 @@ const Timer = props => {
 		if (id === "start") {
 			if (startTime.minutes > 0 || startTime.seconds > 0) {
 				if (paused || over) {
+					Swal.fire({
+						title: "Time Started!",
+						timer: 700,
+						showConfirmButton: false
+					});
 					const { minutes, seconds } = time;
 					if (minutes !== 0 || seconds !== 0) {
 						let newLog = {
@@ -69,7 +74,7 @@ const Timer = props => {
 				setPaused(false);
 				setOver(false);
 			} else {
-				console.log("startTime");
+				Swal.fire("Please enter a value");
 			}
 		}
 
@@ -77,6 +82,8 @@ const Timer = props => {
 			const { minutes, seconds } = time;
 			if (!paused || over) {
 				if (timeLogId !== "") {
+					Swal.fire("Time stopped!");
+
 					let newLog = {
 						id: timeLogId,
 						stopTime: `${minutes
@@ -94,6 +101,7 @@ const Timer = props => {
 							}
 						]
 					});
+					setTimeLogId("");
 				}
 			}
 			setPaused(true);
@@ -132,6 +140,7 @@ const Timer = props => {
 					seconds: startTime.seconds
 				});
 			}
+			return;
 		} else if (time.seconds === 0)
 			setTime({
 				minutes: time.minutes - 1,
@@ -156,6 +165,7 @@ const Timer = props => {
 		if (!paused || over) {
 			// check if the logging exits
 			if (timeLogId !== "") {
+				Swal.fire("Time Reset!");
 				let newLog = {
 					id: timeLogId,
 					stopTime: `${minutes
@@ -173,6 +183,7 @@ const Timer = props => {
 						}
 					]
 				});
+				setTimeLogId("");
 			}
 		}
 	};
@@ -210,9 +221,9 @@ const Timer = props => {
 		});
 	};
 
-	const inputChangeHandler = ({ target: { name, value } }) => {
+	const inputChangeHandler = ({ target: { id, value } }) => {
 		// for input minutes
-		if (name === "minutes") {
+		if (id === "minutes") {
 			setStartTime({
 				...time,
 				minutes: value
@@ -223,7 +234,7 @@ const Timer = props => {
 			});
 		}
 
-		if (name === "seconds") {
+		if (id === "seconds") {
 			setStartTime({
 				...time,
 				seconds: value
@@ -232,6 +243,45 @@ const Timer = props => {
 				...time,
 				seconds: value
 			});
+		}
+	};
+
+	const inputBox = () => {
+		if (over || paused) {
+			return (
+				<div>
+					<Row>
+						<label className="col" htmlFor="minutes">
+							minutes
+						</label>
+						<span className="col"></span>
+						<label className="col" htmlFor="minutes">
+							seconds
+						</label>
+					</Row>
+					<Row>
+						<InputGroup className="mb-3 col">
+							<FormControl
+								type="number"
+								id="minutes"
+								placeholder="minutes"
+								onChange={inputChangeHandler}
+								value={time.minutes}
+							/>
+						</InputGroup>
+						<span className="col-1">:</span>
+						<InputGroup className="mb-3 col">
+							<FormControl
+								type="number"
+								id="seconds"
+								placeholder="seconds"
+								onChange={inputChangeHandler}
+								value={time.seconds}
+							/>
+						</InputGroup>
+					</Row>
+				</div>
+			);
 		}
 	};
 
@@ -244,25 +294,7 @@ const Timer = props => {
 							<h2>Timer</h2>
 						</Card.Header>
 						<Card.Body>
-							<Row>
-								<InputGroup className="mb-3 col">
-									<FormControl
-										type="number"
-										name="minutes"
-										placeholder="minutes"
-										onChange={inputChangeHandler}
-									/>
-								</InputGroup>
-								<span className="col-1">:</span>
-								<InputGroup className="mb-3 col">
-									<FormControl
-										type="number"
-										name="seconds"
-										placeholder="seconds"
-										onChange={inputChangeHandler}
-									/>
-								</InputGroup>
-							</Row>
+							{inputBox()}
 							<h1>
 								{`${time.minutes
 									.toString()
